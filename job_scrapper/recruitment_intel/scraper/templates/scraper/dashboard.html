@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Recruitment Intel - Dashboard</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+    .muted { color: #666; font-size: 0.92em; }
+    .pill { display:inline-block; padding:2px 10px; border:1px solid #ddd; border-radius:999px; font-size:0.85em; }
+    a { color: #1a5bd6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Recruitment Intel</h1>
+  <p class="muted">Portfolio-safe Django + Selenium demo: scrape fixtures, enrich company info, deduplicate/merge, store in DB.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Recent scrape runs</h2>
+      <table>
+        <thead><tr><th>Platform</th><th>Status</th><th>Started</th><th>Limit</th></tr></thead>
+        <tbody>
+          {% for r in runs %}
+            <tr>
+              <td>{{ r.platform.name }}</td>
+              <td><span class="pill">{{ r.status }}</span></td>
+              <td>{{ r.started_at }}</td>
+              <td>{{ r.requested_limit }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="muted">No runs yet. Try: <code>python manage.py scrape_fixtures --platform indeed --limit 10</code></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Latest jobs</h2>
+      <table>
+        <thead><tr><th>Title</th><th>Company</th><th>Location</th></tr></thead>
+        <tbody>
+          {% for j in jobs %}
+            <tr>
+              <td>{{ j.title }}</td>
+              <td><a href="{% url 'company_detail' j.company.id %}">{{ j.company.name }}</a></td>
+              <td class="muted">{{ j.location }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="muted">No jobs yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px;">
+    <h2>Companies</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Website</th><th>Email</th></tr></thead>
+      <tbody>
+        {% for c in companies %}
+          <tr>
+            <td><a href="{% url 'company_detail' c.id %}">{{ c.name }}</a></td>
+            <td class="muted">{{ c.website_url }}</td>
+            <td class="muted">{{ c.email }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="muted">No companies yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
